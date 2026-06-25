@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>بازی جدی قیمت‌گذاری و مدیریت درآمد</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ============================================================
+               CSS Variables – Design System
+               ============================================================ */
+        :root {
+            /* Primary palette */
+            --primary: #1F4E79;
+            --primary-dark: #153a5c;
+            --primary-light: #2a6a9e;
+            --secondary: #4A7EBB;
+            --tertiary: #F2C94C;
+            --tertiary-light: #f7d97a;
+            --bg-warm: #FFF6D1;
+            --bg-white: #ffffff;
+            --bg-light: #f8f6f0;
+
+            /* Neutrals */
+            --text-dark: #1a1a1a;
+            --text-muted: #555555;
+            --text-light: #ffffff;
+            --border-light: #e6e3d8;
+            --shadow-sm: 0 2px 8px rgba(31, 78, 121, 0.08);
+            --shadow-md: 0 4px 16px rgba(31, 78, 121, 0.12);
+            --shadow-lg: 0 8px 32px rgba(31, 78, 121, 0.18);
+
+            /* Spacing (8px base) */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+
+            /* Radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.3s ease;
+
+            /* Typography */
+            --font-base: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+        }
+
+        /* ============================================================
+               Reset & Base
+               ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-base);
+            background: var(--bg-warm);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: var(--space-md);
+            min-height: 100vh;
+        }
+
+        /* RTL typography */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        a,
+        button,
+        input,
+        select,
+        label,
+        div,
+        span {
+            font-family: var(--font-base);
+        }
+
+        /* ============================================================
+               Container & Grid
+               ============================================================ */
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        /* ============================================================
+               Header – Gradient with overlay box
+               ============================================================ */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl) var(--space-lg);
+            color: var(--text-light);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -20%;
+            width: 60%;
+            height: 140%;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .header-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+
+        .header-subtitle {
+            font-size: var(--font-size-md);
+            font-weight: 400;
+            opacity: 0.85;
+            max-width: 75%;
+        }
+
+        /* Summary box – semi-transparent overlay */
+        .summary-box {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            margin-top: var(--space-sm);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-lg) var(--space-xl);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .summary-item .label {
+            opacity: 0.75;
+            font-weight: 300;
+        }
+
+        .summary-item .value {
+            font-weight: 600;
+            background: rgba(242, 201, 76, 0.25);
+            padding: 0 var(--space-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        .summary-badge {
+            background: var(--tertiary);
+            color: var(--primary);
+            font-weight: 700;
+            padding: 0 var(--space-md);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            display: inline-flex;
+            align-items: center;
+            height: 28px;
+        }
+
+        /* ============================================================
+               Filter Controls – Card container
+               ============================================================ */
+        .filter-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-lg);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: var(--space-md) var(--space-lg);
+            border: 1px solid var(--border-light);
+            transition: box-shadow var(--transition-smooth);
+        }
+
+        .filter-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            flex: 1 1 160px;
+            min-width: 130px;
+        }
+
+        .filter-group label {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            background: var(--bg-white);
+            color: var(--text-dark);
+            transition: border var(--transition-fast), box-shadow var(--transition-fast);
+            font-family: var(--font-base);
+            width: 100%;
+            appearance: auto;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(74, 126, 187, 0.15);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            align-items: center;
+            flex: 0 0 auto;
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            font-family: var(--font-base);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-light);
+        }
+        .btn-secondary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-tertiary {
+            background: var(--tertiary);
+            color: var(--primary-dark);
+        }
+        .btn-tertiary:hover {
+            background: var(--tertiary-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-active {
+            background: var(--primary);
+            color: var(--text-light);
+            box-shadow: 0 0 0 2px var(--tertiary);
+        }
+
+        /* ============================================================
+               Filter chips / tags
+               ============================================================ */
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+            width: 100%;
+        }
+
+        .chip {
+            background: var(--bg-warm);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+
+        .chip:hover {
+            background: var(--tertiary-light);
+            border-color: var(--tertiary);
+            color: var(--primary-dark);
+        }
+
+        .chip.active {
+            background: var(--tertiary);
+            border-color: var(--tertiary);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+               Content – Dual column (list + info)
+               ============================================================ */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+        }
+
+        /* ---- Left column: card list ---- */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .card-item {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: var(--secondary);
+        }
+
+        .card-item.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--tertiary), var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-sm);
+        }
+
+        .card-title {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .card-badge {
+            background: var(--tertiary);
+            color: var(--primary-dark);
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            padding: 0 var(--space-sm);
+            border-radius: 12px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .card-badge.success {
+            background: #2e7d32;
+            color: #fff;
+        }
+        .card-badge.warning {
+            background: #ed6c02;
+            color: #fff;
+        }
+        .card-badge.info {
+            background: var(--secondary);
+            color: #fff;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-top: var(--space-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .card-meta .icon {
+            font-size: 1.1em;
+        }
+
+        .card-desc {
+            margin-top: var(--space-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: var(--space-lg);
+            margin-top: var(--space-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .card-stats .stat {
+            display: flex;
+            flex-direction: column;
+        }
+        .card-stats .stat .num {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: var(--font-size-md);
+        }
+        .card-stats .stat .lbl {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+
+        /* ---- Right column: info panel / map placeholder ---- */
+        .info-panel {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            min-height: 320px;
+            transition: box-shadow var(--transition-smooth);
+        }
+
+        .info-panel:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-panel .panel-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--tertiary);
+            padding-bottom: var(--space-sm);
+        }
+
+        .info-panel .panel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .info-panel .panel-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-xs) 0;
+            border-bottom: 1px dashed var(--border-light);
+            font-size: var(--font-size-sm);
+        }
+
+        .info-panel .panel-row .key {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .info-panel .panel-row .value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Map placeholder */
+        .map-placeholder {
+            background: var(--bg-warm);
+            border-radius: var(--radius-sm);
+            padding: var(--space-lg);
+            text-align: center;
+            color: var(--text-muted);
+            border: 2px dashed var(--border-light);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            transition: background var(--transition-smooth);
+        }
+
+        .map-placeholder .map-icon {
+            font-size: 2.4rem;
+            opacity: 0.5;
+        }
+        .map-placeholder .map-legend {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: var(--space-sm);
+        }
+        .map-placeholder .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--font-size-xs);
+        }
+        .map-placeholder .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.blue {
+            background: var(--primary);
+        }
+        .legend-dot.yellow {
+            background: var(--tertiary);
+        }
+        .legend-dot.green {
+            background: #2e7d32;
+        }
+
+        /* ============================================================
+               Statistics Panels (color-coded)
+               ============================================================ */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-sm);
+        }
+
+        .stat-panel {
+            background: var(--bg-white);
+            border-radius: var(--radius-sm);
+            padding: var(--space-md);
+            text-align: center;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-smooth);
+        }
+
+        .stat-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-panel .stat-number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-panel .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+
+        .stat-panel.highlight {
+            background: var(--tertiary);
+            border-color: var(--tertiary);
+        }
+        .stat-panel.highlight .stat-number {
+            color: var(--primary-dark);
+        }
+
+        .stat-panel.blue-bg {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .stat-panel.blue-bg .stat-number {
+            color: var(--text-light);
+        }
+        .stat-panel.blue-bg .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ============================================================
+               Loading state
+               ============================================================ */
+        .loading-shimmer {
+            background: linear-gradient(90deg, var(--bg-light) 25%, var(--bg-warm) 50%, var(--bg-light) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-sm);
+            min-height: 60px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* ============================================================
+               Responsive
+               ============================================================ */
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-subtitle {
+                max-width: 100%;
+            }
+
+            .summary-box {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: var(--space-sm);
+            }
+
+            .header {
+                padding: var(--space-lg) var(--space-md);
+            }
+
+            .header-title {
+                font-size: var(--font-size-xl);
+            }
+
+            .filter-card {
+                flex-direction: column;
+                align-items: stretch;
+                padding: var(--space-md);
+            }
+
+            .filter-group {
+                flex: 1 1 auto;
+                min-width: unset;
+            }
+
+            .filter-actions {
+                flex-wrap: wrap;
+            }
+
+            .filter-actions .btn {
+                flex: 1 1 100%;
+                justify-content: center;
+            }
+
+            .card-item {
+                padding: var(--space-md);
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .card-stats {
+                flex-wrap: wrap;
+                gap: var(--space-sm);
+            }
+
+            .info-panel {
+                padding: var(--space-md);
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-item {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* ============================================================
+               Utilities
+               ============================================================ */
+        .text-center {
+            text-align: center;
+        }
+        .mt-sm {
+            margin-top: var(--space-sm);
+        }
+        .mt-md {
+            margin-top: var(--space-md);
+        }
+        .gap-sm {
+            gap: var(--space-sm);
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-warm);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container" role="main">
+
+        <!-- ============================================================
+        HEADER
+        ============================================================ -->
+        <header class="header" aria-label="header">
+            <div class="header-content">
+
+                <h1 class="header-title">
+                    بررسی کاربرد نظریه بازی‌ها در قیمت‌گذاری و تحلیل بازار
+                </h1>
+
+                <p class="header-subtitle">
+                    رویکردی نوین در قیمت‌گذاری استراتژیک و مدیریت درآمد با بهره‌گیری از
+                    بازی‌های جدی و شبیه‌سازی عامل‌مبنا
+                </p>
+
+                <!-- Summary Box -->
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <span class="label">وضعیت بازی:</span>
+                        <span class="value" id="gameStatus">فعال</span>
+                        <span class="summary-badge">۳ بازیکن</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">فصل جاری:</span>
+                        <span class="value" id="currentSeason">بهار</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">دوره:</span>
+                        <span class="value" id="currentWeek">هفته ۱۳</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">قیمت تعادلی:</span>
+                        <span class="value">۵۷ <small style="opacity:0.7;">واحد</small></span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">سرمایه‌گذار:</span>
+                        <span class="value" id="btcPrice">بیت‌کوین ۴۲,۳۰۰$</span>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- ============================================================
+        FILTER CONTROLS
+        ============================================================ -->
+        <section class="filter-card" aria-label="فیلترها">
+
+            <div class="filter-group">
+                <label for="scenarioSelect">سناریو</label>
+                <select id="scenarioSelect">
+                    <option value="all" selected>همه سناریوها</option>
+                    <option value="monopoly">انحصار کامل</option>
+                    <option value="duopoly">انحصار دو جانبه</option>
+                    <option value="oligopoly">رقابت چند جانبه</option>
+                    <option value="coop">همکاری و ائتلاف</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="playerSelect">بازیکن</label>
+                <select id="playerSelect">
+                    <option value="all" selected>همه بازیکنان</option>
+                    <option value="red">قرمز (ارزان‌فروش)</option>
+                    <option value="blue">آبی (گران‌فروش)</option>
+                    <option value="purple">بنفش (میانه‌رو)</option>
+                    <option value="ai">هوش مصنوعی</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="strategySelect">استراتژی</label>
+                <select id="strategySelect">
+                    <option value="all" selected>همه استراتژی‌ها</option>
+                    <option value="budget">بودجه‌بندی</option>
+                    <option value="pricing">قیمت‌گذاری پویا</option>
+                    <option value="branding">برندینگ</option>
+                    <option value="marketing">بازاریابی</option>
+                    <option value="btc">صندوق ذخیره</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="applyFiltersBtn" aria-label="اعمال فیلترها">
+                    ◀ اعمال فیلتر
+                </button>
+                <button class="btn btn-outline" id="resetFiltersBtn" aria-label="بازنشانی">
+                    ↺ بازنشانی
+                </button>
+            </div>
+
+            <!-- Filter chips -->
+            <div class="filter-chips" id="filterChips">
+                <span class="chip active" data-chip="all">همه</span>
+                <span class="chip" data-chip="monopoly">انحصار</span>
+                <span class="chip" data-chip="duopoly">دو جانبه</span>
+                <span class="chip" data-chip="coop">ائتلاف</span>
+                <span class="chip" data-chip="pricing">قیمت‌گذاری</span>
+                <span class="chip" data-chip="branding">برند</span>
+            </div>
+
+        </section>
+
+        <!-- ============================================================
+        STATISTICS ROW
+        ============================================================ -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-panel highlight">
+                <div class="stat-number" id="statTotal">۱۲</div>
+                <div class="stat-label">کل اجراها</div>
+            </div>
+            <div class="stat-panel blue-bg">
+                <div class="stat-number" id="statWins">۴</div>
+                <div class="stat-label">پیروزی بازیکن مصنوعی</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-number" id="statAvgProfit">۳۷٪</div>
+                <div class="stat-label">میانگین سودآوری</div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-number" id="statEquilibrium">۵۳.۶</div>
+                <div class="stat-label">قیمت تعادلی (دو جانبه)</div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        CONTENT – Dual column
+        ============================================================ -->
+        <div class="content-grid">
+
+            <!-- LEFT: Card List -->
+            <section class="card-list" id="cardList" aria-label="لیست نتایج">
+
+                <!-- Cards will be injected by JavaScript -->
+                <div class="loading-shimmer" style="height:80px;"></div>
+                <div class="loading-shimmer" style="height:80px;"></div>
+                <div class="loading-shimmer" style="height:80px;"></div>
+
+            </section>
+
+            <!-- RIGHT: Info Panel / Map placeholder -->
+            <aside class="info-panel" id="infoPanel" aria-label="پنل اطلاعات">
+
+                <div class="panel-title" id="panelTitle">📊 نمای تفصیلی</div>
+
+                <div class="panel-content" id="panelContent">
+
+                    <!-- Dynamic content inserted by JS -->
+
+                    <!-- Map placeholder -->
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        <div class="map-icon">🗺️</div>
+                        <div style="font-weight:500;">موقعیت بازار مجازی</div>
+                        <div style="font-size:var(--font-size-xs);">
+                            فروشگاه زنجیره‌ای – ۳ برند فعال
+                        </div>
+                        <div class="map-legend">
+                            <span class="legend-item">
+                                <span class="legend-dot blue"></span> برند قرمز
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-dot yellow"></span> برند آبی
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-dot green"></span> برند بنفش
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="font-size:var(--font-size-xs);color:var(--text-muted);text-align:center;border-top:1px solid var(--border-light);padding-top:var(--space-sm);">
+                        🎯 نقطه تعادل نش: (۵۳.۶, ۵۳.۶) واحد پولی
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+        <!-- ============================================================
+        FOOTER / interactive hint
+        ============================================================ -->
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--space-sm);font-size:var(--font-size-xs);color:var(--text-muted);padding:var(--space-sm) 0;border-top:1px solid var(--border-light);margin-top:var(--space-sm);">
+
+            <span>
+                <span style="font-weight:600;">🕹️</span> کلیک روی هر کارت برای مشاهده جزئیات
+            </span>
+            <span>
+                <span style="font-weight:600;">📌</span> بر اساس پایان‌نامه کارشناسی ارشد – دانشگاه صنعتی شریف
+            </span>
+            <span>
+                <span style="font-weight:600;">⚡</span> تابستان ۱۴۰۲
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    JAVASCRIPT – Module pattern
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // DATA – Sample from thesis
+            // ============================================================
+            const gameData = [{
+                id: 1,
+                title: 'انحصار کامل – قیمت بهینه',
+                scenario: 'monopoly',
+                player: 'purple',
+                strategy: 'pricing',
+                brand: 'بنفش',
+                price: 57,
+                demand: 2840,
+                revenue: 90880,
+                profit: 34.2,
+                badge: 'بهینه',
+                badgeType: 'success',
+                desc: 'قیمت تعادلی در حالت انحصار کامل با تابع تقاضای فصلی درجه‌۳ محاسبه شد.',
+                stats: { cost: 25, brandScore: 45, marketShare: '۱۰۰٪' }
+            }, {
+                id: 2,
+                title: 'انحصار دو جانبه – تعادل نش',
+                scenario: 'duopoly',
+                player: 'red',
+                strategy: 'pricing',
+                brand: 'قرمز',
+                price: 53.6,
+                demand: 2210,
+                revenue: 63200,
+                profit: 21.5,
+                badge: 'تعادل',
+                badgeType: 'info',
+                desc: 'نقطه تعادل بازی دو بازیکنه با قیمت ۵۳.۶ واحد. انحراف تک‌جانبه سودمند نیست.',
+                stats: { cost: 25, brandScore: 35, marketShare: '۴۸٪' }
+            }, {
+                id: 3,
+                title: 'استراتژی میانه‌رو – برنده آزمایش ۱',
+                scenario: 'oligopoly',
+                player: 'purple',
+                strategy: 'branding',
+                brand: 'بنفش',
+                price: 50,
+                demand: 3120,
+                revenue: 99840,
+                profit: 41.8,
+                badge: 'پیروز',
+                badgeType: 'success',
+                desc: 'استراتژی قیمت ثابت ۵۰ واحد با بودجه‌بندی متوازن بین برندینگ و هزینه تمام شده.',
+                stats: { cost: 35, brandScore: 45, marketShare: '۳۸٪' }
+            }, {
+                id: 4,
+                title: 'ائتلاف آبی و قرمز – آزمایش ۳',
+                scenario: 'coop',
+                player: 'blue',
+                strategy: 'marketing',
+                brand: 'آبی',
+                price: 55,
+                demand: 2980,
+                revenue: 104300,
+                profit: 52.6,
+                badge: 'پیروز مطلق',
+                badgeType: 'success',
+                desc: 'هماهنگی بین آقای آبی و خانم قرمز با سرمایه‌گذاری ۴۲٪ در بازاریابی در تابستان.',
+                stats: { cost: 35, brandScore: 55, marketShare: '۴۲٪' }
+            }, {
+                id: 5,
+                title: 'ارزان‌فروشی قرمز – آزمایش ۱',
+                scenario: 'oligopoly',
+                player: 'red',
+                strategy: 'budget',
+                brand: 'قرمز',
+                price: 25,
+                demand: 1800,
+                revenue: 36000,
+                profit: 0,
+                badge: 'زیان‌ده',
+                badgeType: 'warning',
+                desc: 'استراتژی حاشیه‌ای با قیمت ۲۵ واحد. سودآوری صفر و سهم بازار پایین.',
+                stats: { cost: 30, brandScore: 25, marketShare: '۱۲٪' }
+            }, {
+                id: 6,
+                title: 'گران‌فروشی آبی – آزمایش ۱',
+                scenario: 'oligopoly',
+                player: 'blue',
+                strategy: 'budget',
+                brand: 'آبی',
+                price: 75,
+                demand: 950,
+                revenue: 47500,
+                profit: 9.8,
+                badge: 'ضعیف',
+                badgeType: 'warning',
+                desc: 'قیمت بالا (۷۵ واحد) باعث کاهش شدید تقاضا و سودآوری پایین می‌شود.',
+                stats: { cost: 35, brandScore: 45, marketShare: '۱۸٪' }
+            }, {
+                id: 7,
+                title: 'استراتژی هوش مصنوعی – مرجع',
+                scenario: 'oligopoly',
+                player: 'ai',
+                strategy: 'branding',
+                brand: 'مصنوعی',
+                price: 55,
+                demand: 3050,
+                revenue: 106750,
+                profit: 47.2,
+                badge: 'هوشمند',
+                badgeType: 'info',
+                desc: 'استراتژی پیشنهادی برای بازیکن مصنوعی: قیمت ۵۵، برندینگ سطح ۳، بازاریابی ۴۲٪.',
+                stats: { cost: 40, brandScore: 55, marketShare: '۴۰٪' }
+            }, {
+                id: 8,
+                title: 'جنگ قیمتی – سناریو فرسایشی',
+                scenario: 'duopoly',
+                player: 'red',
+                strategy: 'pricing',
+                brand: 'قرمز',
+                price: 35,
+                demand: 2050,
+                revenue: 45100,
+                profit: 8.2,
+                badge: 'فرسایشی',
+                badgeType: 'warning',
+                desc: 'کاهش قیمت برای کسب سهم بازار بیشتر، حاشیه سود را به شدت کاهش می‌دهد.',
+                stats: { cost: 25, brandScore: 28, marketShare: '۵۵٪' }
+            }, {
+                id: 9,
+                title: 'بازیابی با بازاریابی – تابستان',
+                scenario: 'coop',
+                player: 'blue',
+                strategy: 'marketing',
+                brand: 'آبی',
+                price: 52,
+                demand: 2650,
+                revenue: 84800,
+                profit: 33.5,
+                badge: 'بازیابی',
+                badgeType: 'success',
+                desc: 'افزایش هزینه بازاریابی در تابستان باعث بازیابی سهم بازار و افزایش سودآوری شد.',
+                stats: { cost: 35, brandScore: 50, marketShare: '۳۵٪' }
+            }, {
+                id: 10,
+                title: 'تعادل انحصار کامل – بهار',
+                scenario: 'monopoly',
+                player: 'purple',
+                strategy: 'pricing',
+                brand: 'بنفش',
+                price: 57,
+                demand: 2560,
+                revenue: 81920,
+                profit: 38.7,
+                badge: 'مرجع',
+                badgeType: 'info',
+                desc: 'قیمت بهینه در فصل بهار با تابع تقاضای فصلی و حساسیت قیمتی محاسبه شده است.',
+                stats: { cost: 25, brandScore: 45, marketShare: '۱۰۰٪' }
+            }, {
+                id: 11,
+                title: 'استراتژی صندوق ذخیره – بیت‌کوین',
+                scenario: 'oligopoly',
+                player: 'ai',
+                strategy: 'btc',
+                brand: 'مصنوعی',
+                price: 50,
+                demand: 2350,
+                revenue: 70500,
+                profit: 29.4,
+                badge: 'اختصاصی',
+                badgeType: 'info',
+                desc: 'تخصیص سرمایه به صندوق ذخیره بیت‌کوین و بهره‌گیری از نوسانات قیمت.',
+                stats: { cost: 40, brandScore: 42, marketShare: '۳۰٪' }
+            }, {
+                id: 12,
+                title: 'پیکربندی نمونه – فروشگاه زنجیره‌ای',
+                scenario: 'oligopoly',
+                player: 'purple',
+                strategy: 'branding',
+                brand: 'بنفش',
+                price: 50,
+                demand: 2880,
+                revenue: 92160,
+                profit: 39.1,
+                badge: 'پایدار',
+                badgeType: 'success',
+                desc: 'پیکربندی پایه بازی با ۳ برند، تابع تقاضای فصلی و حساسیت قیمتی.',
+                stats: { cost: 35, brandScore: 45, marketShare: '۳۶٪' }
+            }];
+
+            // ============================================================
+            // DOM refs
+            // ============================================================
+            const cardList = document.getElementById('cardList');
+            const panelTitle = document.getElementById('panelTitle');
+            const panelContent = document.getElementById('panelContent');
+
+            const scenarioSelect = document.getElementById('scenarioSelect');
+            const playerSelect = document.getElementById('playerSelect');
+            const strategySelect = document.getElementById('strategySelect');
+            const applyBtn = document.getElementById('applyFiltersBtn');
+            const resetBtn = document.getElementById('resetFiltersBtn');
+            const chips = document.querySelectorAll('.chip');
+
+            const statTotal = document.getElementById('statTotal');
+            const statWins = document.getElementById('statWins');
+            const statAvgProfit = document.getElementById('statAvgProfit');
+            const statEquilibrium = document.getElementById('statEquilibrium');
+
+            const gameStatus = document.getElementById('gameStatus');
+            const currentSeason = document.getElementById('currentSeason');
+            const currentWeek = document.getElementById('currentWeek');
+            const btcPrice = document.getElementById('btcPrice');
+
+            // ============================================================
+            // State
+            // ============================================================
+            let filteredData = [...gameData];
+            let selectedId = null;
+
+            // ============================================================
+            // Helper: render cards
+            // ============================================================
+            function renderCards(data) {
+                if (!data || data.length === 0) {
+                    cardList.innerHTML = `
+                            <div style="background:var(--bg-white);border-radius:var(--radius-md);padding:var(--space-lg);text-align:center;color:var(--text-muted);border:1px dashed var(--border-light);">
+                                <div style="font-size:2rem;margin-bottom:var(--space-sm);">🔍</div>
+                                <div>هیچ داده‌ای با فیلترهای انتخاب شده مطابقت ندارد.</div>
+                                <div style="font-size:var(--font-size-xs);margin-top:var(--space-xs);">لطفاً فیلترهای دیگری را امتحان کنید.</div>
+                            </div>
+                        `;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(item => {
+                    const isSelected = (selectedId === item.id);
+                    const badgeColor = item.badgeType === 'success' ? 'success' :
+                        item.badgeType === 'warning' ? 'warning' :
+                        'info';
+
+                    html += `
+                            <div class="card-item ${isSelected ? 'selected' : ''}" data-id="${item.id}">
+                                <div class="card-header">
+                                    <div class="card-title">${item.title}</div>
+                                    <span class="card-badge ${badgeColor}">${item.badge}</span>
+                                </div>
+                                <div class="card-meta">
+                                    <span><span class="icon">🏷️</span> برند: ${item.brand}</span>
+                                    <span><span class="icon">💰</span> قیمت: ${item.price} واحد</span>
+                                    <span><span class="icon">📈</span> تقاضا: ${item.demand.toLocaleString()}</span>
+                                </div>
+                                <div class="card-desc">${item.desc}</div>
+                                <div class="card-stats">
+                                    <div class="stat">
+                                        <span class="num">${item.profit}%</span>
+                                        <span class="lbl">سودآوری</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="num">${item.stats.marketShare}</span>
+                                        <span class="lbl">سهم بازار</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="num">${item.stats.brandScore}</span>
+                                        <span class="lbl">امتیاز برند</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="num">${item.stats.cost}</span>
+                                        <span class="lbl">هزینه تمام شده</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                });
+
+                cardList.innerHTML = html;
+
+                // Attach click listeners
+                document.querySelectorAll('.card-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id, 10);
+                        selectCard(id);
+                    });
+                });
+
+                // If no card selected, select first
+                if (selectedId === null && data.length > 0) {
+                    selectCard(data[0].id);
+                } else if (selectedId !== null) {
+                    // verify selected still exists in filtered set
+                    const stillExists = data.some(d => d.id === selectedId);
+                    if (!stillExists && data.length > 0) {
+                        selectCard(data[0].id);
+                    } else if (stillExists) {
+                        // re-highlight
+                        document.querySelectorAll('.card-item').forEach(el => {
+                            el.classList.toggle('selected', parseInt(el.dataset.id, 10) === selectedId);
+                        });
+                        updatePanel(selectedId);
+                    }
+                }
+            }
+
+            // ============================================================
+            // Select card
+            // ============================================================
+            function selectCard(id) {
+                selectedId = id;
+                document.querySelectorAll('.card-item').forEach(el => {
+                    el.classList.toggle('selected', parseInt(el.dataset.id, 10) === id);
+                });
+                updatePanel(id);
+            }
+
+            // ============================================================
+            // Update info panel
+            // ============================================================
+            function updatePanel(id) {
+                const item = filteredData.find(d => d.id === id);
+                if (!item) {
+                    panelTitle.textContent = '📊 جزئیات';
+                    panelContent.innerHTML = `
+                            <div style="color:var(--text-muted);text-align:center;padding:var(--space-lg);">
+                                موردی انتخاب نشده است.
+                            </div>
+                        `;
+                    return;
+                }
+
+                panelTitle.textContent = `📊 ${item.title}`;
+
+                const rows = Object.entries({
+                    'برند': item.brand,
+                    'استراتژی': item.strategy === 'pricing' ? 'قیمت‌گذاری پویا' :
+                        item.strategy === 'branding' ? 'برندینگ' :
+                        item.strategy === 'marketing' ? 'بازاریابی' :
+                        item.strategy === 'budget' ? 'بودجه‌بندی' :
+                        item.strategy === 'btc' ? 'صندوق ذخیره' : item.strategy,
+                    'سناریو': item.scenario === 'monopoly' ? 'انحصار کامل' :
+                        item.scenario === 'duopoly' ? 'انحصار دو جانبه' :
+                        item.scenario === 'coop' ? 'همکاری و ائتلاف' :
+                        'رقابت چند جانبه',
+                    'قیمت (واحد)': item.price,
+                    'تقاضا': item.demand.toLocaleString(),
+                    'درآمد': item.revenue.toLocaleString(),
+                    'سودآوری': `${item.profit}%`,
+                    'امتیاز برند': item.stats.brandScore,
+                    'هزینه تمام شده': item.stats.cost,
+                    'سهم بازار': item.stats.marketShare,
+                });
+
+                let rowsHtml = '';
+                for (const [key, value] of rows) {
+                    rowsHtml += `
+                            <div class="panel-row">
+                                <span class="key">${key}</span>
+                                <span class="value">${value}</span>
+                            </div>
+                        `;
+                }
+
+                panelContent.innerHTML = `
+                        <div style="font-size:var(--font-size-sm);color:var(--text-muted);margin-bottom:var(--space-sm);">
+                            ${item.desc}
+                        </div>
+                        <div style="margin-top:var(--space-xs);">
+                            ${rowsHtml}
+                        </div>
+                        <div style="margin-top:var(--space-sm);padding:var(--space-sm);background:var(--bg-warm);border-radius:var(--radius-sm);text-align:center;font-size:var(--font-size-xs);">
+                            ⚖️ نقطه تعادل نش: ${item.scenario === 'duopoly' ? '۵۳.۶' : item.scenario === 'monopoly' ? '۵۷' : '۵۰'} واحد
+                        </div>
+                        <div class="map-placeholder" style="min-height:100px;margin-top:var(--space-sm);">
+                            <div style="font-weight:500;font-size:var(--font-size-sm);">📍 موقعیت برند ${item.brand}</div>
+                            <div style="font-size:var(--font-size-xs);">سهم بازار: ${item.stats.marketShare} · امتیاز برند: ${item.stats.brandScore}</div>
+                            <div class="map-legend">
+                                <span class="legend-item">
+                                    <span class="legend-dot blue"></span> ${item.brand}
+                                </span>
+                                <span class="legend-item">
+                                    <span class="legend-dot yellow"></span> رقبا
+                                </span>
+                            </div>
+                        </div>
+                    `;
+            }
+
+            // ============================================================
+            // Filter logic
+            // ============================================================
+            function applyFilters() {
+                const scenario = scenarioSelect.value;
+                const player = playerSelect.value;
+                const strategy = strategySelect.value;
+
+                filteredData = gameData.filter(item => {
+                    let match = true;
+                    if (scenario !== 'all' && item.scenario !== scenario) match = false;
+                    if (player !== 'all' && item.player !== player) match = false;
+                    if (strategy !== 'all' && item.strategy !== strategy) match = false;
+                    return match;
+                });
+
+                // Update chips highlight
+                chips.forEach(chip => {
+                    const val = chip.dataset.chip;
+                    if (val === 'all') {
+                        chip.classList.toggle('active', scenario === 'all' && player === 'all' && strategy === 'all');
+                    } else {
+                        const isActive = (scenario === val || player === val || strategy === val);
+                        chip.classList.toggle('active', isActive);
+                    }
+                });
+
+                // If no chips active, set 'all'
+                const anyActive = Array.from(chips).some(c => c.classList.contains('active'));
+                if (!anyActive) {
+                    chips.forEach(c => c.classList.toggle('active', c.dataset.chip === 'all'));
+                }
+
+                // Reset selection
+                selectedId = null;
+                renderCards(filteredData);
+                updateStats(filteredData);
+                updateHeaderInfo();
+            }
+
+            function resetFilters() {
+                scenarioSelect.value = 'all';
+                playerSelect.value = 'all';
+                strategySelect.value = 'all';
+                chips.forEach(c => c.classList.toggle('active', c.dataset.chip === 'all'));
+                applyFilters();
+            }
+
+            // ============================================================
+            // Update stats
+            // ============================================================
+            function updateStats(data) {
+                const total = data.length;
+                const wins = data.filter(d => d.badgeType === 'success').length;
+                const avgProfit = data.reduce((s, d) => s + d.profit, 0) / (data.length || 1);
+                const eq = data.find(d => d.scenario === 'duopoly');
+                const eqVal = eq ? eq.price : 53.6;
+
+                statTotal.textContent = total;
+                statWins.textContent = wins;
+                statAvgProfit.textContent = Math.round(avgProfit) + '%';
+                statEquilibrium.textContent = eqVal.toFixed(1);
+            }
+
+            // ============================================================
+            // Update header info (simulate dynamic)
+            // ============================================================
+            function updateHeaderInfo() {
+                const seasons = ['بهار', 'تابستان', 'پاییز', 'زمستان'];
+                const seasonIdx = Math.floor(Math.random() * 4);
+                const week = 13 + Math.floor(Math.random() * 39);
+                const btcVal = 38000 + Math.floor(Math.random() * 12000);
+
+                currentSeason.textContent = seasons[seasonIdx];
+                currentWeek.textContent = `هفته ${week}`;
+                btcPrice.textContent = `بیت‌کوین ${btcVal.toLocaleString()}$`;
+                gameStatus.textContent = Math.random() > 0.2 ? 'فعال' : 'در حال محاسبه';
+            }
+
+            // ============================================================
+            // Chip click
+            // ============================================================
+            chips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    const val = this.dataset.chip;
+
+                    // Toggle active class
+                    this.classList.toggle('active');
+
+                    // If 'all' is clicked, deactivate others
+                    if (val === 'all') {
+                        chips.forEach(c => {
+                            if (c !== this) c.classList.remove('active');
+                        });
+                    } else {
+                        // Deactivate 'all' if any other is active
+                        const anyOtherActive = Array.from(chips).some(c =>
+                            c.dataset.chip !== 'all' && c !== this && c.classList.contains('active')
+                        );
+                        if (anyOtherActive) {
+                            document.querySelector('.chip[data-chip="all"]')?.classList.remove('active');
+                        } else {
+                            // If no other chip active, activate 'all'
+                            document.querySelector('.chip[data-chip="all"]')?.classList.add('active');
+                        }
+                    }
+
+                    // Map chip to filter values
+                    const activeChips = Array.from(document.querySelectorAll('.chip.active'))
+                        .map(c => c.dataset.chip)
+                        .filter(v => v !== 'all');
+
+                    if (activeChips.length === 0) {
+                        resetFilters();
+                        return;
+                    }
+
+                    // Map chip values to filter fields
+                    const scenarioMap = ['monopoly', 'duopoly', 'oligopoly', 'coop'];
+                    const playerMap = ['red', 'blue', 'purple', 'ai'];
+                    const strategyMap = ['pricing', 'branding', 'marketing', 'budget', 'btc'];
+
+                    let sc = 'all',
+                        pl = 'all',
+                        st = 'all';
+
+                    for (const val of activeChips) {
+                        if (scenarioMap.includes(val)) sc = val;
+                        else if (playerMap.includes(val)) pl = val;
+                        else if (strategyMap.includes(val)) st = val;
+                    }
+
+                    scenarioSelect.value = sc;
+                    playerSelect.value = pl;
+                    strategySelect.value = st;
+
+                    applyFilters();
+                });
+            });
+
+            // ============================================================
+            // Event listeners
+            // ============================================================
+            applyBtn.addEventListener('click', applyFilters);
+            resetBtn.addEventListener('click', resetFilters);
+
+            // Also apply on select change (real-time)
+            [scenarioSelect, playerSelect, strategySelect].forEach(sel => {
+                sel.addEventListener('change', applyFilters);
+            });
+
+            // ============================================================
+            // Init
+            // ============================================================
+            function init() {
+                // Set initial chips
+                chips.forEach(c => c.classList.toggle('active', c.dataset.chip === 'all'));
+
+                // Initial filter
+                filteredData = [...gameData];
+                selectedId = null;
+
+                // Shuffle a bit for demo
+                const shuffled = [...gameData].sort(() => Math.random() - 0.5);
+                renderCards(shuffled);
+                updateStats(shuffled);
+                updateHeaderInfo();
+
+                // Auto-select first card after render
+                setTimeout(() => {
+                    const firstCard = document.querySelector('.card-item');
+                    if (firstCard) {
+                        const id = parseInt(firstCard.dataset.id, 10);
+                        selectCard(id);
+                    }
+                }, 100);
+
+                // Simulate periodic updates
+                setInterval(() => {
+                    updateHeaderInfo();
+                }, 15000);
+            }
+
+            // Override renderCards to use filteredData for selection
+            const originalRender = renderCards;
+            renderCards = function(data) {
+                originalRender(data);
+                // Ensure selected card is highlighted
+                if (selectedId !== null) {
+                    document.querySelectorAll('.card-item').forEach(el => {
+                        el.classList.toggle('selected', parseInt(el.dataset.id, 10) === selectedId);
+                    });
+                }
+            };
+
+            // Patch applyFilters to update header stats
+            const originalApply = applyFilters;
+            applyFilters = function() {
+                originalApply();
+                // After rendering, if we have data, select first
+                if (filteredData.length > 0 && selectedId === null) {
+                    selectCard(filteredData[0].id);
+                } else if (filteredData.length > 0 && selectedId !== null) {
+                    const stillExists = filteredData.some(d => d.id === selectedId);
+                    if (!stillExists) {
+                        selectCard(filteredData[0].id);
+                    }
+                }
+            };
+
+            // Start
+            init();
+
+            // Expose for debugging
+            window.__gameApp = {
+                data: gameData,
+                filtered: () => filteredData,
+                applyFilters,
+                resetFilters,
+                selectCard
+            };
+
+        })();
+    </script>
+
+</body>
+</html>
